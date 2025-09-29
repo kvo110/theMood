@@ -55,7 +55,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moodModel = context.watch<MoodModel>();
-
+    
     return Scaffold(
       appBar: AppBar(title: Text('Mood Toggle Challenge')),
       backgroundColor: moodModel.backgroundColor, 

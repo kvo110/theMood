@@ -13,8 +13,14 @@ void main() {
 // Mood Model - The "Brain" of our app
 class MoodModel with ChangeNotifier {
   String _currentMood = 'assets/images/happy.png';
-
   Color _backgroundColor = Colors.yellow;
+
+  // Tracks the count for each mood
+  final Map<String, int> moodCounts = {
+    'Happy': 0,
+    'Sad': 0,
+    'Excited': 0,
+  };
 
   String get currentMood => _currentMood;
   Color get backgroundColor => _backgroundColor;
@@ -22,18 +28,21 @@ class MoodModel with ChangeNotifier {
   void setHappy() {
     _currentMood = 'assets/images/happy.png';
     _backgroundColor = Colors.yellow; // sets the background to yellow when mood is happy
+    moodCounts['Happy'] = (moodCounts['Happy'] ?? 0) + 1;
     notifyListeners();
   }
 
   void setSad() {
     _currentMood = 'assets/images/sad.png';
     _backgroundColor = Colors.blue; // sets the background to blue when mood is sad
+    moodCounts['Sad'] = (moodCounts['Sad'] ?? 0) + 1;
     notifyListeners();
   }
 
   void setExcited() {
     _currentMood = 'assets/images/excited.png';
     _backgroundColor = Colors.orange; // sets the background to orange when mode is excited
+    moodCounts['Excited'] = (moodCounts['Excited'] ?? 0) + 1;
     notifyListeners();
   }
 }
@@ -55,7 +64,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moodModel = context.watch<MoodModel>();
-    
+
     return Scaffold(
       appBar: AppBar(title: Text('Mood Toggle Challenge')),
       backgroundColor: moodModel.backgroundColor, 
@@ -69,6 +78,12 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 50),
             MoodButtons(),
             SizedBox(height: 20),
+            Text(
+              'Mood Selection Counter: ',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            MoodCounter(),
           ],
         ),
       ),
@@ -118,6 +133,24 @@ class MoodButtons extends StatelessWidget {
           child: Text('Excited'),
         ),
       ],
+    );
+  }
+}
+
+class MoodCounter extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MoodModel>(
+      builder: (context, moodModel, child) {
+        return Column(
+          children: moodModel.moodCounts.entries.map((entry) {
+            return Text(
+              '${entry.key}: ${entry.value}',
+              style: TextStyle(fontSize: 20),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 void main() {
   runApp(
@@ -20,6 +21,7 @@ class MoodModel with ChangeNotifier {
     'Happy': 0,
     'Sad': 0,
     'Excited': 0,
+    'Random': 0,
   };
 
   String get currentMood => _currentMood;
@@ -45,6 +47,30 @@ class MoodModel with ChangeNotifier {
     moodCounts['Excited'] = (moodCounts['Excited'] ?? 0) + 1;
     notifyListeners();
   }
+
+  void setRandomMood() {
+    final moods = ['Happy', 'Sad', 'Excited', 'Random'];
+    final randomIndex = Random().nextInt(moods.length);
+    final selectedMood = moods[randomIndex];
+
+    switch (selectedMood) {
+      case 'Happy':
+        setHappy();
+        break;
+      case 'Sad':
+        setSad();
+        break;
+      case 'Excited':
+        setExcited();
+        break;
+      case 'Random':
+        _currentMood = 'assets/images/random.png';
+        _backgroundColor = Colors.purple;
+        moodCounts['Random'] = (moodCounts['Random'] ?? 0) + 1;
+        notifyListeners();
+        break;
+    }
+  }
 }
 
 // Main App Widget
@@ -67,7 +93,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text('Mood Toggle Challenge')),
-      backgroundColor: moodModel.backgroundColor, 
+      backgroundColor: moodModel.backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,26 +137,42 @@ class MoodDisplay extends StatelessWidget {
 class MoodButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Column(
       children: [
-        ElevatedButton(
-          onPressed: () {
-            Provider.of<MoodModel>(context, listen: false).setHappy();
-          },
-          child: Text('Happy'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<MoodModel>(context, listen: false).setHappy();
+              },
+              child: Text('Happy'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<MoodModel>(context, listen: false).setSad();
+              },
+              child: Text('Sad'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<MoodModel>(context, listen: false).setExcited();
+              },
+              child: Text('Excited'),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () {
-            Provider.of<MoodModel>(context, listen: false).setSad();
-          },
-          child: Text('Sad'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Provider.of<MoodModel>(context, listen: false).setExcited();
-          },
-          child: Text('Excited'),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<MoodModel>(context, listen: false).setRandomMood();
+              },
+              child: Text('Random'),
+            ),
+          ],
         ),
       ],
     );
